@@ -1,0 +1,3 @@
+[submodule "SCTK"]
+	path = SCTK
+	url = https://github.com/usnistgov/SCTK

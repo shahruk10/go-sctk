@@ -1,0 +1,35 @@
+name: CI
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout the repository
+      uses: actions/checkout@v3
+      with:
+        submodules: recursive
+
+    - name: Setup nix-shell
+      uses: cachix/install-nix-action@v17
+      with:
+        nix_path: nixpkgs=channel:nixos-unstable
+
+    - name: Run tests
+      uses: ZenithalHourlyRate/nix-shell-action@v4
+      with:
+        file: shell.nix
+        script: |
+          make nix-test
+
+    - name: Build artifacts
+      uses: ZenithalHourlyRate/nix-shell-action@v4
+      with:
+        file: shell.nix
+        script: |
+          make nix-build
