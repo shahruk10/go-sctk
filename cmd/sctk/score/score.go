@@ -38,7 +38,7 @@ type Config struct {
 	hypFiles   []sctk.Hypothesis
 	fileFormat score.FileFormat
 	normCfg    score.NormalizeConfig
-	evalCER    bool
+	scliteCfg  sctk.ScliteCfg
 }
 
 // Cmd creates and returns a pointer to the ffcli.Command for the score
@@ -47,8 +47,12 @@ func Cmd() *ffcli.Command {
 	cfg := Config{}
 	fs := flag.NewFlagSet("sctk score", flag.ExitOnError)
 
-	// Will parse this array into config field later.
-	var hypArgs stringArray
+	// Will parse these into config field with the correct type later.
+	var (
+		hypArgs   stringArray
+		delimiter string
+		quoteChar string
+	)
 
 	fs.StringVar(&cfg.outDir, "out", "",
 		"(Required) Path to output directory where scores and reports will be written.\n")
@@ -65,12 +69,17 @@ automatically. This argument may be provided multiple times to point to score
 multiple hypotheses at once.
 `)
 
-	fs.StringVar(&cfg.fileFormat.Delimiter, "delimiter", ",",
+	fs.StringVar(&delimiter, "delimiter", ",",
 		`The delimiter used in reference and hypotheses files. By default, the program expects
 comma delimited files (.csv) The program needs at least two columns per row, containing
 <utteranceID> and <transcript>. By default, the first and second columns are assumed
 to contain <utteranceID> and <transcript> respectively. This can be changed by using
 --id-col and --trn-col arguments.
+`)
+
+	fs.StringVar(&quoteChar, "quote-char", "\"",
+		`The character used to indicate the start and end of a block of text where any instances
+of the delimiter character can be ignored.
 `)
 
 	fs.IntVar(&cfg.fileFormat.ColID, "col-id", 0,
@@ -82,8 +91,16 @@ to contain <utteranceID> and <transcript> respectively. This can be changed by u
 	fs.BoolVar(&cfg.fileFormat.IgnoreFirstRow, "ignore-first", false,
 		"If true, will ignore the first row in the provided files, assuming it is the header row.\n")
 
-	fs.BoolVar(&cfg.evalCER, "cer", false,
+	fs.BoolVar(&cfg.scliteCfg.CER, "cer", false,
 		"If true, will evaluate character error rate instead of word error rate.\n")
+
+	fs.IntVar(&cfg.scliteCfg.LineWidth, "line-width", 1000,
+		`When printing the text alignments for the output option "pralign", lines will be wrapped
+when they reach this many characters
+`)
+
+	fs.StringVar(&cfg.scliteCfg.Encoding, "encoding", "utf-8",
+		"What text encoding to use for interpreting text.\n")
 
 	fs.BoolVar(&cfg.normCfg.CaseSensitive, "case-sensitive", false,
 		"If true, scoring will be case sensitive.\n")
@@ -108,6 +125,13 @@ sctk score \
 				fs.Usage()
 				return err
 			}
+
+			if len(delimiter) != 1 || len(quoteChar) != 1 {
+				return fmt.Errorf("demiliter and quote-char must be a single rune")
+			}
+
+			cfg.fileFormat.Delimiter = []rune(delimiter)[0]
+			cfg.fileFormat.QuoteChar = []rune(quoteChar)[0]
 
 			if err := cfg.checkArgs(); err != nil {
 				fs.Usage()
@@ -162,12 +186,12 @@ func (cfg *Config) parseHypArgs(hypArgs stringArray) error {
 }
 
 func (cfg *Config) checkArgs() error {
-	if cfg.fileFormat.ColID < 0 || cfg.fileFormat.ColTrn < 0 {
-		return fmt.Errorf("column index for transcript and ID must be >=0")
+	if err := cfg.fileFormat.Validate(); err != nil {
+		return err
 	}
 
-	if cfg.fileFormat.ColID == cfg.fileFormat.ColTrn {
-		return fmt.Errorf("column index for transcript and ID must not be the same")
+	if err := cfg.scliteCfg.Validate(); err != nil {
+		return err
 	}
 
 	if _, err := os.Stat(cfg.refFile); os.IsNotExist(err) {
@@ -187,7 +211,7 @@ func (cfg *Config) checkArgs() error {
 // files to generate error analysis reports.
 func (cfg *Config) runScore(ctx context.Context) error {
 	return score.Score(
-		ctx, cfg.fileFormat, cfg.normCfg,
-		cfg.outDir, cfg.refFile, cfg.hypFiles, cfg.evalCER,
+		ctx, cfg.fileFormat, cfg.normCfg, cfg.scliteCfg,
+		cfg.outDir, cfg.refFile, cfg.hypFiles,
 	)
 }

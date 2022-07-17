@@ -24,6 +24,8 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/dlclark/regexp2"
+	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/text/unicode/norm"
 
@@ -44,10 +46,25 @@ type NormalizeConfig struct {
 
 // FileFormat specifies the expected format of reference and hypotheses files.
 type FileFormat struct {
-	Delimiter      string
+	Delimiter      rune
+	QuoteChar      rune
 	ColTrn         int
 	ColID          int
 	IgnoreFirstRow bool
+}
+
+// Validate checks whether the options configured for the file format are
+// consistent, and supported.
+func (f *FileFormat) Validate() error {
+	if f.ColID < 0 || f.ColTrn < 0 {
+		return fmt.Errorf("column index for transcript and ID must be >=0")
+	}
+
+	if f.ColID == f.ColTrn {
+		return fmt.Errorf("column index for transcript and ID must not be the same")
+	}
+
+	return nil
 }
 
 // normalizeFiles parses the reference and hypotheses files, and normalizes them
@@ -130,10 +147,59 @@ func normalizeUtts(utts []Utt, cfg NormalizeConfig) {
 
 		if cfg.NormalizeUnicode {
 			trn = norm.NFC.String(trn)
+			trn = removeZW(trn)
 		}
 
 		utts[i].Transcript = trn
 	}
+}
+
+// removeZW removes all optional occurrences of ZWNJ or ZWJ from Bangla text.
+func removeZW(s string) string {
+	const (
+		zw = "\u200D" // Zero Width Joiner
+	)
+
+	// The non-printing characters U+200C (ZWNJ) and U+200D (ZWJ) are used in
+	// Bangla to optionally control the appearance of ligatures, except in one
+	// special situation: after RA (র) and before HOSONTO + YA (য্‌), the presence
+	// or absence of ZWJ (formerly ZWNJ) changes the visual appearance of the
+	// involved consonants in a meaningful way.
+	//
+	// This occurrences of ZWJ must be preserved, while all other occurrences are
+	// advisory and can be removed for most purposes. After RA and before HOSONTO
+	// + YA, this function changes ZWNJ to ZWJ and preserves ZWJ; and removes ZWNJ
+	// and ZWJ everywhere else.
+	//
+	// Using regexp2 package, since Go's regexp currently doesn't support positive
+	// lookbehind.
+	zwStandardize := regexp2.MustCompile(
+		"(?<=\u09b0)[\u200c\u200d]+(?=\u09cd\u09af)", regexp2.Unicode,
+	)
+
+	zwDelete := regexp2.MustCompile(
+		"(?<!\u09b0)[\u200c\u200d](?!\u09cd\u09af)", regexp2.Unicode,
+	)
+
+	s, err := zwStandardize.Replace(s, zw, -1, -1)
+	if err != nil {
+		logrus.WithFields(log.Fields{
+			"text":  s,
+			"error": err,
+		}).Error("failed to standardize zero-width joiners")
+
+		return s
+	}
+
+	s, err = zwDelete.Replace(s, "", -1, -1)
+	if err != nil {
+		logrus.WithFields(log.Fields{
+			"text":  s,
+			"error": err,
+		}).Error("failed to remove zero-width joiners")
+	}
+
+	return s
 }
 
 // filterUtts removes utterances in the given list whose IDs do not appear in
@@ -185,7 +251,7 @@ func readTranscriptFile(
 			continue
 		}
 
-		parts := strings.Split(line, fileFormat.Delimiter)
+		parts := fieldsWithQuoted(line, fileFormat.Delimiter, fileFormat.QuoteChar)
 
 		if len(parts) < maxColsExpected {
 			return nil, fmt.Errorf(
@@ -226,7 +292,7 @@ func writeTranscriptFile(
 	})
 
 	for _, utt := range utts {
-		line := fmt.Sprintf("%s(%s)\n", utt.Transcript, utt.ID)
+		line := fmt.Sprintf("%s (%s)\n", utt.Transcript, utt.ID)
 		if _, err := w.WriteString(line); err != nil {
 			return fmt.Errorf("failed to write line to transcript file: %w", err)
 		}
@@ -262,4 +328,29 @@ func sanitizeSystemName(name string) string {
 func sanitizeUttID(ID string) string {
 	parts := strings.Fields(ID)
 	return strings.Join(parts, "_")
+}
+
+// fieldsWithQuoted splits the given string into fields, based on the given
+// delimiter and quote character. If the delimiter occurs between quoteChars,
+// that part of the string won't be split.
+func fieldsWithQuoted(s string, delimiter, quoteChar rune) []string {
+	hasQuotes := false
+	inQuoted := false
+
+	parts := strings.FieldsFunc(s, func(r rune) bool {
+		if r == quoteChar {
+			inQuoted = !inQuoted
+			hasQuotes = true
+		}
+
+		return !inQuoted && r == delimiter
+	})
+
+	if hasQuotes {
+		for i := range parts {
+			parts[i] = strings.Trim(parts[i], string(quoteChar))
+		}
+	}
+
+	return parts
 }

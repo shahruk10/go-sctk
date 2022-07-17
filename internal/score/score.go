@@ -20,23 +20,14 @@ package score
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/shahruk10/go-sctk/internal/sctk"
 )
 
 func Score(
-	ctx context.Context, fileFormat FileFormat, normCfg NormalizeConfig,
-	outDir, refFile string, hypFiles []sctk.Hypothesis, evalCER bool,
+	ctx context.Context, fileFormat FileFormat, normCfg NormalizeConfig, scliteCfg sctk.ScliteCfg,
+	outDir, refFile string, hypFiles []sctk.Hypothesis,
 ) error {
-	const (
-		filePerm = 0777
-	)
-
-	if err := os.MkdirAll(outDir, filePerm); err != nil {
-		return fmt.Errorf("failed to create output directory: %w", err)
-	}
-
 	normRef, normHypFiles, err := normalizeFiles(
 		ctx, fileFormat, normCfg, outDir, refFile, hypFiles,
 	)
@@ -44,7 +35,7 @@ func Score(
 		return err
 	}
 
-	if err := sctk.RunSclite(ctx, outDir, normRef, normHypFiles, evalCER); err != nil {
+	if err := sctk.RunSclite(ctx, scliteCfg, outDir, normRef, normHypFiles); err != nil {
 		return fmt.Errorf("failed to run sclite: %w", err)
 	}
 
