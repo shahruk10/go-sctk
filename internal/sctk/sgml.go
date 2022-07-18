@@ -49,8 +49,8 @@ const (
 // AlignedHypothesis contains the aligned sentences between reference and a
 // hypothesis, indexed by speaker and sentence IDs.
 type AlignedHypothesis struct {
-	SystemName string
-	Speakers   map[string]SpeakerSentences
+	SystemName string                      `json:"system_name"`
+	Speakers   map[string]SpeakerSentences `json:"speakers"`
 }
 
 // SpeakerSentences contain all the sentences of speaker indexed by sentence ID.
@@ -61,19 +61,19 @@ type SpeakerSentences map[string]*AlignedSentence
 type AlignedSentence struct {
 	SystemName string
 	SpeakerID  string
-	SentenceID string
-	Sequence   int
-	WordCount  int
-	Words      []AlignedWord
+	SentenceID string        `json:"sentence_id"`
+	Sequence   int           `json:"sequence"`
+	WordCount  int           `json:"word_count"`
+	Words      []AlignedWord `json:"words"`
 }
 
 // AlignedWord contains the reference word and corresponding word in the
 // hypothesis (if aligned). It also contains a label field which indicates the
 // type of alignment - "correct", "substitution", "insertion", or "deletion".
 type AlignedWord struct {
-	Label string
-	Ref   string
-	Hyp   string
+	Label string `json:"eval_label"`
+	Ref   string `json:"ref"`
+	Hyp   string `json:"hyp"`
 }
 
 func WriteAlignment(outPath string, aligned *AlignedHypothesis, format TableFormat) error {

@@ -20,6 +20,7 @@ package sctk
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
@@ -31,6 +32,10 @@ import (
 	"github.com/shahruk10/go-sctk/internal/sctk/embedded"
 	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
+)
+
+const (
+	filePerm = 0777
 )
 
 // ScliteCfg configures report generation options for sclite.
@@ -80,10 +85,6 @@ func (c *ScliteCfg) Validate() error {
 func RunSclite(
 	ctx context.Context, cfg ScliteCfg, outDir, refFile string, hypFiles []Hypothesis,
 ) error {
-	const (
-		filePerm = 0777
-	)
-
 	if len(hypFiles) == 0 {
 		return fmt.Errorf("no hypothesis files provided")
 	}
@@ -175,6 +176,20 @@ func genAlignmentFileFromSgml(outDir string) error {
 			if err := WriteAlignment(outFile, aligned, format); err != nil {
 				return err
 			}
+		}
+
+		// Also dump the alignments as JSON to easily parse back later for further
+		// processing if required.
+		jsonData, err := json.MarshalIndent(aligned, "", " ")
+		if err != nil {
+			return err
+		}
+
+		ext := ".pra.json"
+		outFile := strings.ReplaceAll(sgmlFile, ".sgml", ext)
+
+		if err := os.WriteFile(outFile, jsonData, filePerm); err != nil {
+			return err
 		}
 	}
 
