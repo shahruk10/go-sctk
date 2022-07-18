@@ -76,6 +76,14 @@ func normalizeFiles(
 	ctx context.Context, fileFormat FileFormat, cfg NormalizeConfig,
 	outDir, refFile string, hypFiles []sctk.Hypothesis,
 ) (string, []sctk.Hypothesis, error) {
+	const (
+		filePerm = 0777
+	)
+
+	if err := os.MkdirAll(outDir, filePerm); err != nil {
+		return "", nil, fmt.Errorf("failed to create output directory: %w", err)
+	}
+
 	// Read reference transcripts.
 	refUtts, err := readTranscriptFile(refFile, fileFormat)
 	if err != nil {
