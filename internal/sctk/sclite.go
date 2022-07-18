@@ -23,7 +23,10 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path"
+	"path/filepath"
 	"regexp"
+	"strings"
 
 	"github.com/shahruk10/go-sctk/internal/sctk/embedded"
 	"github.com/sirupsen/logrus"
@@ -95,6 +98,11 @@ func RunSclite(
 
 	// Use default reports if unspecified.
 	if len(cfg.Reports) == 0 {
+		// We leave out the pra file here, because for non-english alphabets, the
+		// spacing between words in the pra file added to align reference and
+		// hypotheses doesn't always work properly (due to diacritics and font
+		// ligatures). We instead parse the sgml file and generate our own pra file,
+		// with aligned ref and hyp shown in markdown tables.
 		cfg.Reports = []string{"sum", "rsum", "dtl", "sgml"}
 	}
 
@@ -130,5 +138,45 @@ func RunSclite(
 		}).Error("sclite encountered errors")
 	}
 
-	return err
+	return genAlignmentFileFromSgml(outDir)
+}
+
+func genAlignmentFileFromSgml(outDir string) error {
+	sgmlFiles, err := filepath.Glob(path.Join(outDir, "*.sgml"))
+	if err != nil {
+		logrus.WithFields(log.Fields{
+			"err": err,
+		}).Error("no sgml files were produced, cannot generate alignment file")
+	}
+
+	// Fixed for now.
+	formats := []TableFormat{TableFormatMarkdown, TableFormatHTML, TableFormatCSV}
+
+	for _, sgmlFile := range sgmlFiles {
+		aligned, err := ReadAlignmentSgml(sgmlFile)
+		if err != nil {
+			return err
+		}
+
+		for _, format := range formats {
+			var ext string
+			switch {
+			case format == TableFormatMarkdown:
+				ext = ".pra.md"
+			case format == TableFormatHTML:
+				ext = ".pra.html"
+			case format == TableFormatCSV:
+				ext = ".pra.csv"
+			default:
+				ext = ".pra"
+			}
+
+			outFile := strings.ReplaceAll(sgmlFile, ".sgml", ext)
+			if err := WriteAlignment(outFile, aligned, format); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
 }
