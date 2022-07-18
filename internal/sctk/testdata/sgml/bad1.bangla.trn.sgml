@@ -1,0 +1,13 @@
+<SYSTEM title="bangla" ref_fname="ref.trn" hyp_fname="hyp1.trn" creation_date="Sun Jul 17 22:10:36 2022" format="2.4" frag_corr="FALSE" opt_del="FALSE" weight_ali="FALSE" weight_filename="">
+<SPEAKER id="">
+<PATH id="common_voice_bn_30620258.mp3" word_cnt="5" sequence="0" case_sense="1">
+C,"তার","তার":C,"পিতার","পিতার":C,"নাম","নাম":C,"কালীপ্রসন্ন","কালীপ্রসন্ন":S,"ভট্টাচার্য।","ভট্টাচার্য"
+</PATH>
+<PATH id="common_voice_bn_30620259.mp3" word_cnt="8" sequence="1" case_sense="1">
+C,"ভৌগোলিক","ভৌগোলিক":C,"অবস্থান","অবস্থান":C,"অনুযায়ী","অনুযায়ী":D,"শহরটির",:D,"পূর্ব",:D,"দিকে",:S,"কাশ্মীর","চাহরটিরপূর্বদিকেকাশ্মির":S,"অবস্থিত।","অবস্থিত"
+</PATH>
+<PATH id="common_voice_bn_30620260.mp3" word_cnt="5" sequence="2" case_sense="1">
+C,"এটি","এটি":S,"বিশ্বব্যাপি","বিশ্বব্যাপী":I,,"একই":C,"হয়ে","হয়ে":S,"থাকে।","থাকে"
+</PATH>
+</SPEAKER>
+</SYSTEM>

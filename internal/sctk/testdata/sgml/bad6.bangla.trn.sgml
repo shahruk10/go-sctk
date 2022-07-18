@@ -1,0 +1,3 @@
+<SYSTEM title="bangla" ref_fname="ref.trn" hyp_fname="hyp1.trn" creation_date="Sun Jul 17 22:10:36 2022" format="2.4" frag_corr="FALSE" opt_del="FALSE" weight_ali="FALSE" weight_filename="">
+<SPEAKER id="common">
+<PATH id="common_voice_bn_30620258.mp3" word_cnt="5" sequence="0" case_sense="1">
