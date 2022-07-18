@@ -26,10 +26,11 @@ import (
 
 	"github.com/dlclark/regexp2"
 	"github.com/sirupsen/logrus"
-	log "github.com/sirupsen/logrus"
 	"golang.org/x/text/unicode/norm"
 
+	"github.com/shahruk10/go-sctk/internal/fileutils"
 	"github.com/shahruk10/go-sctk/internal/sctk"
+	"github.com/shahruk10/go-sctk/internal/textutils"
 )
 
 // An Utt contains the transcript of an utterance along with its ID.
@@ -183,7 +184,7 @@ func removeZW(s string) string {
 
 	s, err := zwStandardize.Replace(s, zw, -1, -1)
 	if err != nil {
-		logrus.WithFields(log.Fields{
+		logrus.WithFields(logrus.Fields{
 			"text":  s,
 			"error": err,
 		}).Error("failed to standardize zero-width joiners")
@@ -193,7 +194,7 @@ func removeZW(s string) string {
 
 	s, err = zwDelete.Replace(s, "", -1, -1)
 	if err != nil {
-		logrus.WithFields(log.Fields{
+		logrus.WithFields(logrus.Fields{
 			"text":  s,
 			"error": err,
 		}).Error("failed to remove zero-width joiners")
@@ -226,7 +227,7 @@ func readTranscriptFile(
 		return nil, fmt.Errorf("failed to read reference file: %w", err)
 	}
 
-	defer closeFileOrLog(f)
+	defer fileutils.CloseFileOrLog(f)
 
 	scanner := bufio.NewScanner(f)
 	ldx := 0
@@ -251,7 +252,7 @@ func readTranscriptFile(
 			continue
 		}
 
-		parts := fieldsWithQuoted(line, fileFormat.Delimiter, fileFormat.QuoteChar)
+		parts := textutils.FieldsWithQuoted(line, fileFormat.Delimiter, fileFormat.QuoteChar)
 
 		if len(parts) < maxColsExpected {
 			return nil, fmt.Errorf(
@@ -277,7 +278,7 @@ func writeTranscriptFile(
 		return fmt.Errorf("failed to create output transcript file: %w", err)
 	}
 
-	defer closeFileOrLog(f)
+	defer fileutils.CloseFileOrLog(f)
 
 	w := bufio.NewWriter(f)
 
@@ -305,17 +306,6 @@ func writeTranscriptFile(
 	return nil
 }
 
-// closeFileOrLog tries to close the given file. If it fails to do so, the error
-// is logged.
-func closeFileOrLog(f *os.File) {
-	if errClose := f.Close(); errClose != nil {
-		log.WithFields(log.Fields{
-			"error": errClose,
-			"path":  f.Name(),
-		}).Error("failed to close file")
-	}
-}
-
 // sanitizeSystemName converts the given string representing a system name to all
 // lower case, and replaces and spaces with underscores.
 func sanitizeSystemName(name string) string {
@@ -328,29 +318,4 @@ func sanitizeSystemName(name string) string {
 func sanitizeUttID(ID string) string {
 	parts := strings.Fields(ID)
 	return strings.Join(parts, "_")
-}
-
-// fieldsWithQuoted splits the given string into fields, based on the given
-// delimiter and quote character. If the delimiter occurs between quoteChars,
-// that part of the string won't be split.
-func fieldsWithQuoted(s string, delimiter, quoteChar rune) []string {
-	hasQuotes := false
-	inQuoted := false
-
-	parts := strings.FieldsFunc(s, func(r rune) bool {
-		if r == quoteChar {
-			inQuoted = !inQuoted
-			hasQuotes = true
-		}
-
-		return !inQuoted && r == delimiter
-	})
-
-	if hasQuotes {
-		for i := range parts {
-			parts[i] = strings.Trim(parts[i], string(quoteChar))
-		}
-	}
-
-	return parts
 }
