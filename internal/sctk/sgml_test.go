@@ -16,7 +16,6 @@
 package sctk
 
 import (
-	"os"
 	"path"
 	"testing"
 
@@ -74,9 +73,9 @@ func TestReadAlignmentSgml(t *testing.T) {
 			wantErr:  true,
 		},
 		{
-			sgmlPath: "testdata/sgml/good.bangla.trn.sgml",
+			sgmlPath: "testdata/sgml/good1.bangla.trn.sgml",
 			wantErr:  false,
-			name:     "good",
+			name:     "good1",
 			want: &AlignedHypothesis{
 				SystemName: "bangla",
 				Speakers: map[string]SpeakerSentences{
@@ -130,6 +129,186 @@ func TestReadAlignmentSgml(t *testing.T) {
 				},
 			},
 		},
+		{
+			sgmlPath: "testdata/sgml/good2.bangla.trn.sgml",
+			wantErr:  false,
+			name:     "good2",
+			want: &AlignedHypothesis{
+				SystemName: "bangla-cer",
+				Speakers: map[string]SpeakerSentences{
+					"common": {
+						"common_voice_bn_30620258.mp3": &AlignedSentence{
+							SystemName: "bangla-cer",
+							SpeakerID:  "common",
+							SentenceID: "common_voice_bn_30620258.mp3",
+							Sequence:   0,
+							WordCount:  34,
+							Words: []AlignedWord{
+								{"C", "ত", "ত"},
+								{"C", "া", "া"},
+								{"I", "", "ঁ"},
+								{"C", "র", "র"},
+								{"C", "প", "প"},
+								{"C", "ি", "ি"},
+								{"C", "ত", "ত"},
+								{"C", "া", "া"},
+								{"C", "র", "র"},
+								{"C", "ন", "ন"},
+								{"C", "া", "া"},
+								{"C", "ম", "ম"},
+								{"C", "ক", "ক"},
+								{"C", "া", "া"},
+								{"C", "ল", "ল"},
+								{"C", "ী", "ী"},
+								{"C", "প", "প"},
+								{"C", "্", "্"},
+								{"C", "র", "র"},
+								{"C", "স", "স"},
+								{"C", "ন", "ন"},
+								{"C", "্", "্"},
+								{"C", "ন", "ন"},
+								{"C", "ভ", "ভ"},
+								{"C", "ট", "ট"},
+								{"C", "্", "্"},
+								{"C", "ট", "ট"},
+								{"C", "া", "া"},
+								{"C", "চ", "চ"},
+								{"C", "া", "া"},
+								{"C", "র", "র"},
+								{"C", "্", "্"},
+								{"C", "য", "য"},
+								{"C", "।", "।"},
+							},
+						},
+						"common_voice_bn_30620259.mp3": &AlignedSentence{
+							SystemName: "bangla-cer",
+							SpeakerID:  "common",
+							SentenceID: "common_voice_bn_30620259.mp3",
+							Sequence:   1,
+							WordCount:  52,
+							Words: []AlignedWord{
+								{"C", "ভ", "ভ"},
+								{"C", "ৌ", "ৌ"},
+								{"C", "গ", "গ"},
+								{"C", "ো", "ো"},
+								{"C", "ল", "ল"},
+								{"C", "ি", "ি"},
+								{"C", "ক", "ক"},
+								{"C", "অ", "অ"},
+								{"C", "ব", "ব"},
+								{"C", "স", "স"},
+								{"C", "্", "্"},
+								{"C", "থ", "থ"},
+								{"C", "া", "া"},
+								{"C", "ন", "ন"},
+								{"C", "অ", "অ"},
+								{"C", "ন", "ন"},
+								{"C", "ু", "ু"},
+								{"C", "য", "য"},
+								{"C", "া", "া"},
+								{"C", "য", "য"},
+								{"C", "়", "়"},
+								{"C", "ী", "ী"},
+								{"C", "শ", "শ"},
+								{"C", "হ", "হ"},
+								{"C", "র", "র"},
+								{"C", "ট", "ট"},
+								{"C", "ি", "ি"},
+								{"C", "র", "র"},
+								{"C", "প", "প"},
+								{"C", "ূ", "ূ"},
+								{"C", "র", "র"},
+								{"C", "্", "্"},
+								{"C", "ব", "ব"},
+								{"C", "দ", "দ"},
+								{"C", "ি", "ি"},
+								{"C", "ক", "ক"},
+								{"C", "ে", "ে"},
+								{"C", "ক", "ক"},
+								{"C", "া", "া"},
+								{"C", "শ", "শ"},
+								{"C", "্", "্"},
+								{"C", "ম", "ম"},
+								{"C", "ী", "ী"},
+								{"C", "র", "র"},
+								{"C", "অ", "অ"},
+								{"C", "ব", "ব"},
+								{"C", "স", "স"},
+								{"C", "্", "্"},
+								{"C", "থ", "থ"},
+								{"C", "ি", "ি"},
+								{"C", "ত", "ত"},
+								{"C", "।", "।"},
+							},
+						},
+						"common_voice_bn_30620260.mp3": &AlignedSentence{
+							SystemName: "bangla-cer",
+							SpeakerID:  "common",
+							SentenceID: "common_voice_bn_30620260.mp3",
+							Sequence:   2,
+							WordCount:  55,
+							Words: []AlignedWord{
+								{"D", "ব", ""},
+								{"S", "ই", "প"},
+								{"S", "ট", "প"},
+								{"C", "ি", "ি"},
+								{"D", "র", ""},
+								{"C", "ম", "ম"},
+								{"D", "ূ", ""},
+								{"C", "ল", "ল"},
+								{"I", "", "উ"},
+								{"I", "", "প"},
+								{"I", "", "দ"},
+								{"I", "", "্"},
+								{"I", "", "ব"},
+								{"I", "", "ী"},
+								{"I", "", "প"},
+								{"C", "উ", "উ"},
+								{"C", "প", "প"},
+								{"C", "জ", "জ"},
+								{"C", "ী", "ী"},
+								{"C", "ব", "ব"},
+								{"C", "্", "্"},
+								{"C", "য", "য"},
+								{"C", "ম", "ম"},
+								{"C", "ধ", "ধ"},
+								{"C", "্", "্"},
+								{"C", "য", "য"},
+								{"C", "ব", "ব"},
+								{"C", "ি", "ি"},
+								{"C", "ত", "ত"},
+								{"C", "্", "্"},
+								{"C", "ত", "ত"},
+								{"C", "স", "স"},
+								{"C", "ম", "ম"},
+								{"C", "া", "া"},
+								{"C", "জ", "জ"},
+								{"C", "ে", "ে"},
+								{"C", "প", "প"},
+								{"C", "ি", "ি"},
+								{"C", "ছ", "ছ"},
+								{"D", "ি", ""},
+								{"D", "য", ""},
+								{"D", "়", ""},
+								{"C", "ে", "ে"},
+								{"C", "প", "প"},
+								{"D", "ড", ""},
+								{"S", "়", "র"},
+								{"C", "া", "া"},
+								{"I", "", "ণ"},
+								{"C", "ন", "ন"},
+								{"C", "া", "া"},
+								{"C", "র", "র"},
+								{"C", "ী", "ী"},
+								{"C", "র", "র"},
+								{"C", "া", "া"},
+								{"C", "।", "।"},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, tc := range testCases {
@@ -171,29 +350,29 @@ func TestWriteAlignmentSgml(t *testing.T) {
 	}{
 		{
 			name:     "html",
-			sgmlPath: "testdata/sgml/good.bangla.trn.sgml",
-			wantPath: "testdata/sgml/good.bangla.trn.pra.html",
+			sgmlPath: "testdata/sgml/good1.bangla.trn.sgml",
+			wantPath: "testdata/sgml/good1.bangla.trn.pra.html",
 			format:   TableFormatHTML,
 			wantErr:  false,
 		},
 		{
 			name:     "markdown",
-			sgmlPath: "testdata/sgml/good.bangla.trn.sgml",
-			wantPath: "testdata/sgml/good.bangla.trn.pra.md",
+			sgmlPath: "testdata/sgml/good1.bangla.trn.sgml",
+			wantPath: "testdata/sgml/good1.bangla.trn.pra.md",
 			format:   TableFormatMarkdown,
 			wantErr:  false,
 		},
 		{
 			name:     "csv",
-			sgmlPath: "testdata/sgml/good.bangla.trn.sgml",
-			wantPath: "testdata/sgml/good.bangla.trn.pra.csv",
+			sgmlPath: "testdata/sgml/good1.bangla.trn.sgml",
+			wantPath: "testdata/sgml/good1.bangla.trn.pra.csv",
 			format:   TableFormatCSV,
 			wantErr:  false,
 		},
 		{
 			name:     "text",
-			sgmlPath: "testdata/sgml/good.bangla.trn.sgml",
-			wantPath: "testdata/sgml/good.bangla.trn.pra.txt",
+			sgmlPath: "testdata/sgml/good1.bangla.trn.sgml",
+			wantPath: "testdata/sgml/good1.bangla.trn.pra.txt",
 			format:   TableFormatTxt,
 			wantErr:  false,
 		},
@@ -270,23 +449,5 @@ func compareAlignedHypotheses(t *testing.T, want, got *AlignedHypothesis) {
 				t.Errorf("unexpected aligned sentence for speaker=%q, sent=%q (-want, +got):\n%s", spk, sentID, diff)
 			}
 		}
-	}
-}
-
-func compareFiles(t *testing.T, wantPath, gotPath string) {
-	t.Helper()
-
-	want, err := os.ReadFile(wantPath)
-	if err != nil {
-		t.Errorf("unexpected error while reading reference file, want=nil, got=%v", err)
-	}
-
-	got, err := os.ReadFile(gotPath)
-	if err != nil {
-		t.Errorf("unexpected error while reading output file, want=nil, got=%v", err)
-	}
-
-	if diff := cmp.Diff(want, got); diff != "" {
-		t.Errorf("differences between reference and output files (-want, +got):\n%s", diff)
 	}
 }

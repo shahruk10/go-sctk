@@ -21,7 +21,6 @@ import (
 	"fmt"
 	"os"
 	"path"
-	"sort"
 	"strings"
 
 	"github.com/dlclark/regexp2"
@@ -48,7 +47,6 @@ type NormalizeConfig struct {
 // FileFormat specifies the expected format of reference and hypotheses files.
 type FileFormat struct {
 	Delimiter      rune
-	QuoteChar      rune
 	ColTrn         int
 	ColID          int
 	IgnoreFirstRow bool
@@ -85,7 +83,7 @@ func normalizeFiles(
 	}
 
 	// Read reference transcripts.
-	refUtts, err := readTranscriptFile(refFile, fileFormat)
+	refUtts, err := readTranscriptFile(ctx, refFile, fileFormat)
 	if err != nil {
 		return "", nil, fmt.Errorf("failed to read reference file: %w", err)
 	}
@@ -94,7 +92,7 @@ func normalizeFiles(
 	normalizeUtts(refUtts, cfg)
 
 	refNorm := path.Join(outDir, "ref.trn")
-	if err := writeTranscriptFile(refUtts, refNorm); err != nil {
+	if err := writeTranscriptFile(ctx, refUtts, refNorm); err != nil {
 		return "", nil, fmt.Errorf("failed to write normalized reference file: %w", err)
 	}
 
@@ -114,7 +112,7 @@ func normalizeFiles(
 	normHypFiles := make([]sctk.Hypothesis, 0, len(hypFiles))
 
 	for _, hyp := range hypFiles {
-		hypUtts, err := readTranscriptFile(hyp.FilePath, fileFormat)
+		hypUtts, err := readTranscriptFile(ctx, hyp.FilePath, fileFormat)
 		if err != nil {
 			return "", nil, fmt.Errorf("failed to read hypothesis file: %w", err)
 		}
@@ -131,7 +129,7 @@ func normalizeFiles(
 		sanitizedName := sanitizeSystemName(hyp.SystemName)
 		hypNorm := path.Join(outDir, sanitizedName+".trn")
 
-		if err := writeTranscriptFile(hypUtts, hypNorm); err != nil {
+		if err := writeTranscriptFile(ctx, hypUtts, hypNorm); err != nil {
 			return "", nil, fmt.Errorf("failed to write normalized hypothesis file: %w", err)
 		}
 
@@ -228,7 +226,7 @@ func filterUtts(utts []Utt, refIDs map[string]struct{}) []Utt {
 // readTranscriptFile reads the utterance data from the given transcript file
 // based on the provided file format.
 func readTranscriptFile(
-	filePath string, fileFormat FileFormat,
+	ctx context.Context, filePath string, fileFormat FileFormat,
 ) ([]Utt, error) {
 	f, err := os.Open(filePath)
 	if err != nil {
@@ -252,7 +250,16 @@ func readTranscriptFile(
 		maxColsExpected = fileFormat.ColID
 	}
 
+	// Length is 1 greater than zero-based index.
+	maxColsExpected += 1
+
 	for scanner.Scan() {
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		default:
+		}
+
 		ldx++
 
 		line := strings.TrimSpace(scanner.Text())
@@ -260,7 +267,7 @@ func readTranscriptFile(
 			continue
 		}
 
-		parts := textutils.FieldsWithQuoted(line, fileFormat.Delimiter, fileFormat.QuoteChar)
+		parts := textutils.FieldsWithQuoted(line, fileFormat.Delimiter)
 
 		if len(parts) < maxColsExpected {
 			return nil, fmt.Errorf(
@@ -279,7 +286,7 @@ func readTranscriptFile(
 // writeTranscriptFile writes the provided list of utterances to the given path
 // in the format expected by SCTK tools - "<transcript>(<uttID>)".
 func writeTranscriptFile(
-	utts []Utt, filePath string,
+	ctx context.Context, utts []Utt, filePath string,
 ) error {
 	f, err := os.Create(filePath)
 	if err != nil {
@@ -290,17 +297,13 @@ func writeTranscriptFile(
 
 	w := bufio.NewWriter(f)
 
-	// Sorting utts by ID.
-	sort.SliceStable(utts, func(i, j int) bool {
-		switch c := strings.Compare(utts[i].ID, utts[j].ID); c {
-		case -1:
-			return true
-		default:
-			return false
-		}
-	})
-
 	for _, utt := range utts {
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+		}
+
 		line := fmt.Sprintf("%s (%s)\n", utt.Transcript, utt.ID)
 		if _, err := w.WriteString(line); err != nil {
 			return fmt.Errorf("failed to write line to transcript file: %w", err)

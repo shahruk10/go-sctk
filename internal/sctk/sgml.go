@@ -43,7 +43,6 @@ const (
 	attrCaseSensitive = "case_sense" // <PATH case_sense="1" ...>
 	wordListDelimiter = ':'          // Delimiter between tuples of (label, ref word, hyp word)
 	wordDelimiter     = ','          // Delimiter in tuples of (label, ref word, hyp word)
-	quoteChar         = '"'          // Character between which delimiters are ignored.
 )
 
 // AlignedHypothesis contains the aligned sentences between reference and a
@@ -218,14 +217,24 @@ func parsePathTag(tokenizer *html.Tokenizer, t html.Token, speakerID string) (*A
 		}
 	}
 
-	if sent.SentenceID == "" || sent.WordCount == 0 {
+	if sent.SentenceID == "" {
 		logrus.WithFields(logrus.Fields{
 			"speaker":    speakerID,
 			"sentence":   sent.SentenceID,
 			"word_count": sent.WordCount,
-		}).Error("sentence ID / word count is empty")
+		}).Error("sentence ID in sgml is empty")
 
 		return nil, fmt.Errorf("failed to parse sgml file, check logs")
+	}
+
+	if sent.WordCount == 0 {
+		logrus.WithFields(logrus.Fields{
+			"speaker":    speakerID,
+			"sentence":   sent.SentenceID,
+			"word_count": sent.WordCount,
+		}).Warn("word count in sgml is empty")
+
+		return &sent, nil
 	}
 
 	// Allocating word slice.
@@ -245,7 +254,7 @@ func parsePathTag(tokenizer *html.Tokenizer, t html.Token, speakerID string) (*A
 	// Splitting word list into tuples of (label, ref word, hyp word).
 	listStr := strings.TrimSpace(tokenizer.Token().Data)
 
-	wordList := textutils.FieldsWithQuoted(listStr, wordListDelimiter, quoteChar)
+	wordList := textutils.FieldsWithQuoted(listStr, wordListDelimiter)
 	if len(wordList) != sent.WordCount {
 		logrus.WithFields(logrus.Fields{
 			"speaker":    speakerID,
@@ -259,38 +268,25 @@ func parsePathTag(tokenizer *html.Tokenizer, t html.Token, speakerID string) (*A
 
 	// Parsing each tuple of (label, ref word, hyp word)
 	for i, w := range wordList {
-		parts := textutils.FieldsWithQuoted(w, wordDelimiter, quoteChar)
+		parts := textutils.FieldsWithQuoted(w, wordDelimiter)
 
-		// If this is a deletion or insertion, we only expect 2 fields. Otherwise
-		// for correct or substitution, we need 3 fields.
-		wantParts := 2
-		if strings.HasPrefix(w, "C") || strings.HasPrefix(w, "S") {
-			wantParts = 3
-		}
-
-		if len(parts) != wantParts {
+		if len(parts) != 3 {
 			logrus.WithFields(logrus.Fields{
 				"speaker":       speakerID,
 				"sentence":      sent.SentenceID,
 				"aligned_index": i,
 				"aligned_word":  w,
 				"got_parts":     len(parts),
-				"want_parts":    wantParts,
+				"want_parts":    3,
 			}).Errorf("unexpected number of fields in aligned word")
 
 			return nil, fmt.Errorf("failed to parse sgml file, check logs")
 		}
 
-		aw := AlignedWord{}
-		aw.Label = parts[0]
-
-		switch {
-		case aw.Label == "D":
-			aw.Ref = parts[1]
-		case aw.Label == "I":
-			aw.Hyp = parts[1]
-		default:
-			aw.Ref, aw.Hyp = parts[1], parts[2]
+		aw := AlignedWord{
+			Label: parts[0],
+			Ref:   parts[1],
+			Hyp:   parts[2],
 		}
 
 		sent.Words = append(sent.Words, aw)
