@@ -1,0 +1,122 @@
+DETAILED OVERALL REPORT FOR THE SYSTEM: good1_hyp2
+
+SENTENCE RECOGNITION PERFORMANCE
+
+ sentences                                          10
+ with errors                             70.0%   (   7)
+
+   with substitutions                    70.0%   (   7)
+   with deletions                         0.0%   (   0)
+   with insertions                       40.0%   (   4)
+
+
+WORD RECOGNITION PERFORMANCE
+
+Percent Total Error       =   29.0%   (  20)
+
+Percent Correct           =   76.8%   (  53)
+
+Percent Substitution      =   23.2%   (  16)
+Percent Deletions         =    0.0%   (   0)
+Percent Insertions        =    5.8%   (   4)
+Percent Word Accuracy     =   71.0%
+
+
+Ref. words                =           (  69)
+Hyp. words                =           (  73)
+Aligned words             =           (  73)
+
+CONFUSION PAIRS                  Total                 (15)
+                                 With >=  1 occurrences (15)
+
+   1:    2  ->  তার ==> তাঁর
+   2:    1  ->  আইনজীবী। ==> জীবী।
+   3:    1  ->  আত্ম-ধ্বংসাত্মক ==> ধ্বংসাত্মক
+   4:    1  ->  একই ==> একি
+   5:    1  ->  জজ ==> জর্জ
+   6:    1  ->  তারপর ==> পর
+   7:    1  ->  পড়া ==> পরান
+   8:    1  ->  পিছিয়ে ==> পিছে
+   9:    1  ->  প্রশাসনিক ==> দার্শনিক
+  10:    1  ->  বইটির ==> মল
+  11:    1  ->  বিশ্বব্যাপি ==> বিশ্ব-ব্যাপী
+  12:    1  ->  মূল ==> উপদ্বীপ
+  13:    1  ->  মৌসুমী ==> মৌসুমে
+  14:    1  ->  হামিদ ==> হামিড
+  15:    1  ->  হিসাবে ==> হিসেবে
+     -------
+        16
+
+
+
+INSERTIONS                       Total                 (4)
+                                 With >=  1 occurrences (4)
+
+   1:    1  ->  আইন
+   2:    1  ->  আত্ম
+   3:    1  ->  তার
+   4:    1  ->  পপি
+     -------
+         4
+
+
+
+DELETIONS                        Total                 (0)
+                                 With >=  1 occurrences (0)
+
+     -------
+         0
+
+
+
+SUBSTITUTIONS                    Total                 (15)
+                                 With >=  1 occurrences (15)
+
+   1:    2  ->  তার
+   2:    1  ->  আইনজীবী।
+   3:    1  ->  আত্ম-ধ্বংসাত্মক
+   4:    1  ->  একই
+   5:    1  ->  জজ
+   6:    1  ->  তারপর
+   7:    1  ->  পড়া
+   8:    1  ->  পিছিয়ে
+   9:    1  ->  প্রশাসনিক
+  10:    1  ->  বইটির
+  11:    1  ->  বিশ্বব্যাপি
+  12:    1  ->  মূল
+  13:    1  ->  মৌসুমী
+  14:    1  ->  হামিদ
+  15:    1  ->  হিসাবে
+     -------
+        16
+
+
+* NOTE: The 'Substitution' words are those reference words
+        for which the recognizer supplied an incorrect word.
+
+
+FALSELY RECOGNIZED               Total                 (15)
+                                 With >=  1 occurrences (15)
+
+   1:    2  ->  তাঁর
+   2:    1  ->  উপদ্বীপ
+   3:    1  ->  একি
+   4:    1  ->  জর্জ
+   5:    1  ->  জীবী।
+   6:    1  ->  দার্শনিক
+   7:    1  ->  ধ্বংসাত্মক
+   8:    1  ->  পর
+   9:    1  ->  পরান
+  10:    1  ->  পিছে
+  11:    1  ->  বিশ্ব-ব্যাপী
+  12:    1  ->  মল
+  13:    1  ->  মৌসুমে
+  14:    1  ->  হামিড
+  15:    1  ->  হিসেবে
+     -------
+        16
+
+
+* NOTE: The 'Falsely Recognized' words are those hypothesis words
+        which the recognizer incorrectly substituted for a reference word.
+
