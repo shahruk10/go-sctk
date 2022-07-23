@@ -22,6 +22,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -254,7 +255,7 @@ func parsePathTag(tokenizer *html.Tokenizer, t html.Token, speakerID string) (*A
 	// Splitting word list into tuples of (label, ref word, hyp word).
 	listStr := strings.TrimSpace(tokenizer.Token().Data)
 
-	wordList := textutils.FieldsWithQuoted(listStr, wordListDelimiter)
+	wordList := splitAlignedTuples(listStr)
 	if len(wordList) != sent.WordCount {
 		logrus.WithFields(logrus.Fields{
 			"speaker":    speakerID,
@@ -293,4 +294,24 @@ func parsePathTag(tokenizer *html.Tokenizer, t html.Token, speakerID string) (*A
 	}
 
 	return &sent, nil
+}
+
+// splitAlignedTuples splits the tuples containing (label, ref word, hyp word)
+// in the sgml file. We don't use strings.Fields or textutils.FieldsWithQuoted
+// here because sgml doesn't quote the entire tuple; this causes issues when the
+// ref or hyp word contains the delimiter used by SCTK (":"). To get around that
+// issue, we manually replace the delimiter using a regex and then split on the
+// new delimiter, which should'nt really ever appear as a ref or hyp word.
+func splitAlignedTuples(list string) []string {
+	const (
+		newDelimiter = "<sctk-break-here>"
+	)
+
+	// Case sensitive, and has surrounding context characters to match only the
+	// beginning of a aligned word tuple.
+	r := regexp.MustCompile(":([CSID]),")
+
+	list = r.ReplaceAllString(list, newDelimiter+"$1,")
+
+	return strings.Split(list, newDelimiter)
 }

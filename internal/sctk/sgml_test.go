@@ -22,6 +22,51 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
+func TestSplitAlignedTuples(t *testing.T) {
+	t.Parallel()
+
+	testCases := []struct {
+		name    string
+		listStr string
+		want    []string
+	}{
+		{
+			name:    "normal",
+			listStr: `C,"a","a":S,"a","b":I,,"a":D,"b",`,
+			want:    []string{`C,"a","a"`, `S,"a","b"`, `I,,"a"`, `D,"b",`},
+		},
+		{
+			name:    "unquoted_fields",
+			listStr: `C,"a:","a:"` + ":" + `S,"a","b:"` + ":" + `I,,"a:"` + ":" + `D,"b:",`,
+			want:    []string{`C,"a:","a:"`, `S,"a","b:"`, `I,,"a:"`, `D,"b:",`},
+		},
+		{
+			name:    "single_part",
+			listStr: `C,"a","a"`,
+			want:    []string{`C,"a","a"`},
+		},
+		{
+			name:    "empty_string",
+			listStr: ``,
+			want:    []string{""},
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+
+		t.Run(tc.name, func(subT *testing.T) {
+			subT.Parallel()
+
+			got := splitAlignedTuples(tc.listStr)
+
+			if diff := cmp.Diff(tc.want, got); diff != "" {
+				subT.Errorf("unexpected split tuples (-want, +got):\n%s", diff)
+			}
+		})
+	}
+}
+
 //nolint: funlen // table tests can be long.
 func TestReadAlignmentSgml(t *testing.T) {
 	t.Parallel()
