@@ -17,28 +17,28 @@
 // text.
 package textutils
 
-import "strings"
+import (
+	"encoding/csv"
+	"strings"
 
-// fieldsWithQuoted splits the given string into fields, based on the given
-// delimiter and quote character. If the delimiter occurs between quoteChars,
-// that part of the string won't be split.
-func FieldsWithQuoted(s string, delimiter, quoteChar rune) []string {
-	hasQuotes := false
-	inQuoted := false
+	"github.com/sirupsen/logrus"
+)
 
-	parts := strings.FieldsFunc(s, func(r rune) bool {
-		if r == quoteChar {
-			inQuoted = !inQuoted
-			hasQuotes = true
-		}
+// FieldsWithQuoted splits the given string into fields, based on the given
+// delimiter. This method handles the case where a quote may appear in an
+// unquoted field and a non-doubled quote may appear in a quoted field.
+func FieldsWithQuoted(s string, delimiter rune) []string {
+	r := csv.NewReader(strings.NewReader(s))
+	r.Comma = delimiter
+	r.LazyQuotes = true
 
-		return !inQuoted && r == delimiter
-	})
-
-	if hasQuotes {
-		for i := range parts {
-			parts[i] = strings.Trim(parts[i], string(quoteChar))
-		}
+	parts, err := r.Read()
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"string":    s,
+			"delimiter": string(delimiter),
+			"error":     err,
+		}).Error("failed to split fields")
 	}
 
 	return parts

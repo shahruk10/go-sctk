@@ -51,7 +51,6 @@ func Cmd() *ffcli.Command {
 	var (
 		hypArgs   stringArray
 		delimiter string
-		quoteChar string
 	)
 
 	fs.StringVar(&cfg.outDir, "out", "",
@@ -75,11 +74,6 @@ comma delimited files (.csv) The program needs at least two columns per row, con
 <utteranceID> and <transcript>. By default, the first and second columns are assumed
 to contain <utteranceID> and <transcript> respectively. This can be changed by using
 --id-col and --trn-col arguments.
-`)
-
-	fs.StringVar(&quoteChar, "quote-char", "\"",
-		`The character used to indicate the start and end of a block of text where any instances
-of the delimiter character can be ignored.
 `)
 
 	fs.IntVar(&cfg.fileFormat.ColID, "col-id", 0,
@@ -126,12 +120,11 @@ sctk score \
 				return err
 			}
 
-			if len(delimiter) != 1 || len(quoteChar) != 1 {
-				return fmt.Errorf("demiliter and quote-char must be a single rune")
+			if len(delimiter) != 1 {
+				return fmt.Errorf("demiliter  must be a single rune")
 			}
 
 			cfg.fileFormat.Delimiter = []rune(delimiter)[0]
-			cfg.fileFormat.QuoteChar = []rune(quoteChar)[0]
 
 			if err := cfg.checkArgs(); err != nil {
 				fs.Usage()
