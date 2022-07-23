@@ -65,7 +65,7 @@ func getBinPath(binName string) (string, error) {
 	}
 
 	binPath := path.Join(binDir, binName)
-	if _, err := os.Stat(binPath); os.IsExist(err) {
+	if _, err := os.Stat(binPath); err == nil {
 		return binPath, nil
 	}
 

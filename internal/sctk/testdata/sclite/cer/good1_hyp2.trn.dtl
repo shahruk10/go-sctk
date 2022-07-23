@@ -1,0 +1,120 @@
+DETAILED OVERALL REPORT FOR THE SYSTEM: good1_hyp2
+
+SENTENCE RECOGNITION PERFORMANCE
+
+ sentences                                          10
+ with errors                             70.0%   (   7)
+
+   with substitutions                    60.0%   (   6)
+   with deletions                        30.0%   (   3)
+   with insertions                       60.0%   (   6)
+
+
+WORD RECOGNITION PERFORMANCE
+
+Percent Total Error       =    8.0%   (  34)
+
+Percent Correct           =   95.3%   ( 404)
+
+Percent Substitution      =    2.4%   (  10)
+Percent Deletions         =    2.4%   (  10)
+Percent Insertions        =    3.3%   (  14)
+Percent Word Accuracy     =   92.0%
+
+
+Ref. words                =           ( 424)
+Hyp. words                =           ( 428)
+Aligned words             =           ( 438)
+
+CONFUSION PAIRS                  Total                 (10)
+                                 With >=  1 occurrences (10)
+
+   1:    1  ->  ই ==> প
+   2:    1  ->  ই ==> ি
+   3:    1  ->  ট ==> প
+   4:    1  ->  দ ==> ড
+   5:    1  ->  প ==> দ
+   6:    1  ->  ় ==> র
+   7:    1  ->  া ==> ে
+   8:    1  ->  ি ==> ী
+   9:    1  ->  ী ==> ে
+  10:    1  ->  ্ ==> া
+     -------
+        10
+
+
+
+INSERTIONS                       Total                 (10)
+                                 With >=  1 occurrences (10)
+
+   1:    3  ->  ্
+   2:    2  ->  ঁ
+   3:    2  ->  প
+   4:    1  ->  -
+   5:    1  ->  উ
+   6:    1  ->  দ
+   7:    1  ->  ন
+   8:    1  ->  ব
+   9:    1  ->  র
+  10:    1  ->  ী
+     -------
+        14
+
+
+
+DELETIONS                        Total                 (10)
+                                 With >=  1 occurrences (10)
+
+   1:    1  ->  -
+   2:    1  ->  ড
+   3:    1  ->  ব
+   4:    1  ->  য
+   5:    1  ->  র
+   6:    1  ->  স
+   7:    1  ->  ়
+   8:    1  ->  া
+   9:    1  ->  ি
+  10:    1  ->  ূ
+     -------
+        10
+
+
+
+SUBSTITUTIONS                    Total                 (9)
+                                 With >=  1 occurrences (9)
+
+   1:    2  ->  ই
+   2:    1  ->  ট
+   3:    1  ->  দ
+   4:    1  ->  প
+   5:    1  ->  ়
+   6:    1  ->  া
+   7:    1  ->  ি
+   8:    1  ->  ী
+   9:    1  ->  ্
+     -------
+        10
+
+
+* NOTE: The 'Substitution' words are those reference words
+        for which the recognizer supplied an incorrect word.
+
+
+FALSELY RECOGNIZED               Total                 (8)
+                                 With >=  1 occurrences (8)
+
+   1:    2  ->  প
+   2:    2  ->  ে
+   3:    1  ->  ড
+   4:    1  ->  দ
+   5:    1  ->  র
+   6:    1  ->  া
+   7:    1  ->  ি
+   8:    1  ->  ী
+     -------
+        10
+
+
+* NOTE: The 'Falsely Recognized' words are those hypothesis words
+        which the recognizer incorrectly substituted for a reference word.
+

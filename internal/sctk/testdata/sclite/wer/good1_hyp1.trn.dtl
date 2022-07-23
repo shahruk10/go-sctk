@@ -1,0 +1,108 @@
+DETAILED OVERALL REPORT FOR THE SYSTEM: good1_hyp1
+
+SENTENCE RECOGNITION PERFORMANCE
+
+ sentences                                          10
+ with errors                             70.0%   (   7)
+
+   with substitutions                    70.0%   (   7)
+   with deletions                         0.0%   (   0)
+   with insertions                       20.0%   (   2)
+
+
+WORD RECOGNITION PERFORMANCE
+
+Percent Total Error       =   18.8%   (  13)
+
+Percent Correct           =   84.1%   (  58)
+
+Percent Substitution      =   15.9%   (  11)
+Percent Deletions         =    0.0%   (   0)
+Percent Insertions        =    2.9%   (   2)
+Percent Word Accuracy     =   81.2%
+
+
+Ref. words                =           (  69)
+Hyp. words                =           (  71)
+Aligned words             =           (  71)
+
+CONFUSION PAIRS                  Total                 (11)
+                                 With >=  1 occurrences (11)
+
+   1:    1  ->  আত্ম-ধ্বংসাত্মক ==> ধ্বংসাত্মক
+   2:    1  ->  জজ ==> জর্জ
+   3:    1  ->  তার ==> তাঁর
+   4:    1  ->  পড়া ==> পরাণ
+   5:    1  ->  পিছিয়ে ==> পিছে
+   6:    1  ->  প্রশাসনিক ==> দার্শনিক
+   7:    1  ->  বইটির ==> মল
+   8:    1  ->  বিশ্বব্যাপি ==> বিশ্বব্যাপী
+   9:    1  ->  মূল ==> উপদ্বীপ
+  10:    1  ->  মৌসুমী ==> মৌসুমে
+  11:    1  ->  হিসাবে ==> হিসেবে
+     -------
+        11
+
+
+
+INSERTIONS                       Total                 (2)
+                                 With >=  1 occurrences (2)
+
+   1:    1  ->  আত্ম
+   2:    1  ->  পপি
+     -------
+         2
+
+
+
+DELETIONS                        Total                 (0)
+                                 With >=  1 occurrences (0)
+
+     -------
+         0
+
+
+
+SUBSTITUTIONS                    Total                 (11)
+                                 With >=  1 occurrences (11)
+
+   1:    1  ->  আত্ম-ধ্বংসাত্মক
+   2:    1  ->  জজ
+   3:    1  ->  তার
+   4:    1  ->  পড়া
+   5:    1  ->  পিছিয়ে
+   6:    1  ->  প্রশাসনিক
+   7:    1  ->  বইটির
+   8:    1  ->  বিশ্বব্যাপি
+   9:    1  ->  মূল
+  10:    1  ->  মৌসুমী
+  11:    1  ->  হিসাবে
+     -------
+        11
+
+
+* NOTE: The 'Substitution' words are those reference words
+        for which the recognizer supplied an incorrect word.
+
+
+FALSELY RECOGNIZED               Total                 (11)
+                                 With >=  1 occurrences (11)
+
+   1:    1  ->  উপদ্বীপ
+   2:    1  ->  জর্জ
+   3:    1  ->  তাঁর
+   4:    1  ->  দার্শনিক
+   5:    1  ->  ধ্বংসাত্মক
+   6:    1  ->  পরাণ
+   7:    1  ->  পিছে
+   8:    1  ->  বিশ্বব্যাপী
+   9:    1  ->  মল
+  10:    1  ->  মৌসুমে
+  11:    1  ->  হিসেবে
+     -------
+        11
+
+
+* NOTE: The 'Falsely Recognized' words are those hypothesis words
+        which the recognizer incorrectly substituted for a reference word.
+
