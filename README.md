@@ -43,7 +43,7 @@ spk02-utt02,খেলা ছার টেস্ট শিরিজের চূ�
 EOF
 
 # Getting the sctk CLI tool from this repository and giving it executable permissions.
-version=v0.2.0
+version=v0.3.0
 wget -O sctk https://github.com/shahruk10/go-sctk/releases/download/${version}/sctk
 chmod +x sctk
 
